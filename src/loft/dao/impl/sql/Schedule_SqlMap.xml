@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="euc-kr" ?>
+
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Schedule">
+		
+	<typeAlias alias="Schedule" 					type="loft.model.Schedule"/>
+	<typeAlias alias="ScheduleSearchCondition" 		type="loft.search.ScheduleSearchCondition"/>
+	
+
+    <resultMap id="scheduleResult" class="Schedule" >
+		<result column="IDX"           	property="idx"          jdbcType="DECIMAL" />
+		<result column="START"        	property="start"      	jdbcType="VARCHAR" />
+		<result column="END"      		property="end"     		jdbcType="VARCHAR" />
+		<result column="TITLE"        	property="title"      	jdbcType="VARCHAR" />
+	</resultMap>
+	
+	
+    <select id="getScheduleList" parameterClass="ScheduleSearchCondition" resultMap="scheduleResult">
+		SELECT IDX
+     	     , date_format(START, '%Y-%m-%d') AS START
+		     , date_format(END, '%Y-%m-%d') AS END
+		     , TITLE
+		  FROM TB_SCHEDULE
+		 WHERE START BETWEEN from_unixtime(#start#, '%Y-%m-%d') AND from_unixtime(#end#, '%Y-%m-%d')
+	</select>
+
+
+</sqlMap>

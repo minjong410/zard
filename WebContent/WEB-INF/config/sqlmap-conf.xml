@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="euc-kr" ?>
+
+<!DOCTYPE sqlMapConfig PUBLIC "-//ibatis.apache.org//DTD SQL Map Config 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-config-2.dtd">
+
+<sqlMapConfig>
+	<settings cacheModelsEnabled="true" enhancementEnabled="true" useStatementNamespaces="true" lazyLoadingEnabled="true"/>
+	
+	
+	<!-- COMMON : BASE MANAGEMENT -->
+	<sqlMap resource="/loft/dao/impl/sql/Loft_SqlMap.xml"/>
+	<sqlMap resource="/loft/dao/impl/sql/Expense_SqlMap.xml"/>
+	<sqlMap resource="/loft/dao/impl/sql/Travel_SqlMap.xml"/>
+	<sqlMap resource="/loft/dao/impl/sql/Schedule_SqlMap.xml"/>
+	<sqlMap resource="/loft/dao/impl/sql/Memo_SqlMap.xml"/>
+
+</sqlMapConfig>

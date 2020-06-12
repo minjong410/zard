@@ -1,0 +1,71 @@
+<!DOCTYPE tiles-definitions PUBLIC
+    "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN"
+    "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+
+<tiles-definitions>
+
+	<!-- layout -->
+	<definition name="full" template="/WEB-INF/templates/full.jsp">
+		<put-attribute name="title" value="Watari Travel" type="string" />
+	</definition>
+
+	<definition name="base" template="/WEB-INF/templates/base.jsp">
+		<put-attribute name="title" value="Watari Travel" type="string" />
+		<put-attribute name="header" value="/WEB-INF/templates/include/header.jsp" />
+		<put-attribute name="footer" value="/WEB-INF/templates/include/footer.jsp" />
+	</definition>
+	
+	<definition name="html5up" template="/WEB-INF/templates/html5up.jsp">
+		<put-attribute name="title" value="Watari Travel" type="string" />
+		<put-attribute name="header" value="/WEB-INF/templates/include/header.jsp" />
+		<put-attribute name="footer" value="/WEB-INF/templates/include/footer.jsp" />
+	</definition>
+
+	
+	<!-- view -->
+	<definition name="main" extends="full">
+		<put-attribute name="body" value="/WEB-INF/view/main/main.jsp" />
+	</definition>
+	
+	<definition name="common/error" extends="full">
+		<put-attribute name="body" value="/WEB-INF/view/common/error.jsp" />
+	</definition>
+	
+	<definition name="about" extends="html5up">
+		<put-attribute name="body" value="/WEB-INF/view/about/about.jsp" />
+		<put-attribute name="css" value="bp" type="string" />
+	</definition>
+
+	<definition name="contact" extends="html5up">
+		<put-attribute name="body" value="/WEB-INF/view/contact/contact.jsp" />
+		<put-attribute name="css" value="bp" type="string" />
+	</definition>
+	
+	<definition name="expense" extends="base">
+		<put-attribute name="body" value="/WEB-INF/view/expense/expense.jsp" />
+	</definition>
+	
+	<definition name="schedule" extends="base">
+		<put-attribute name="body" value="/WEB-INF/view/schedule/schedule.jsp" />
+	</definition>
+	
+	<definition name="memo" extends="base">
+		<put-attribute name="body" value="/WEB-INF/view/memo/memo.jsp" />
+	</definition>
+	
+	<definition name="travel/inventory" extends="base">
+		<put-attribute name="body" value="/WEB-INF/view/travel/inventory.jsp" />
+	</definition>
+
+	<definition name="travel/radius" extends="base">
+		<put-attribute name="header" value="/WEB-INF/templates/include/header_magazine.jsp" />
+		<put-attribute name="css" value="radius" type="string" />
+		<put-attribute name="body" value="/WEB-INF/view/travel/radius.jsp" />
+	</definition>
+	
+	<definition name="travel/magazine" extends="base">
+		<put-attribute name="header" value="/WEB-INF/templates/include/header_magazine.jsp" />
+		<put-attribute name="body" value="/WEB-INF/view/travel/magazine.jsp" />
+	</definition>
+
+</tiles-definitions>

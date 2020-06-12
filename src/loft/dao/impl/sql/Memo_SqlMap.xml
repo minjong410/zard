@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="euc-kr" ?>
+
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Memo">
+		
+	<typeAlias alias="Memo" 					type="loft.model.Memo"/>
+	<typeAlias alias="MemoSearchCondition" 		type="loft.search.MemoSearchCondition"/>
+	
+    <resultMap id="memoResult" class="Memo" >
+		<result column="IDX"           	property="idx"          jdbcType="DECIMAL" />
+		<result column="CATEGORY"       property="category"     jdbcType="VARCHAR" />
+		<result column="MEMO"      		property="memo"     	jdbcType="VARCHAR" />
+		<result column="NAME"          	property="name"        	jdbcType="VARCHAR" /> 
+		<result column="SORT"       	property="sort"        	jdbcType="DECIMAL" />
+		<result column="REGIST_DATE"	property="registDate"	jdbcType="TIMESTAMP" /> 
+	</resultMap>
+	
+
+	<!-- 메모 조회 -->  
+    <select id="getMemoList" parameterClass="MemoSearchCondition" resultMap="memoResult">
+		SELECT IDX
+     	     , CATEGORY
+		     , MEMO
+		     , NAME
+		     , SORT
+		     , date_format(REGIST_DATE, '%Y-%m-%d %H:%i') AS REGIST_DATE
+		  FROM TB_MEMO
+         ORDER BY CATEGORY, SORT DESC
+	</select>
+	
+	
+    <!-- 메모 등록 -->  
+    <update id="updateMemo" parameterClass="Memo">
+    	UPDATE TB_MEMO
+	       SET MEMO = #memo#
+	     WHERE CATEGORY = #category#
+	       AND SORT = #sort#
+	</update>
+
+</sqlMap>

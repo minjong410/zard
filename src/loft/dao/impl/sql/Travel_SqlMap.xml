@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="euc-kr" ?>
+
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Travel">
+		
+	<typeAlias alias="Travel" 					type="loft.model.Travel"/>
+	<typeAlias alias="TravelSearchCondition" 	type="loft.search.TravelSearchCondition"/>
+	
+
+    <resultMap id="itemResult" class="Travel" >
+		<result column="ITEM_ID"        property="itemId"          	jdbcType="DECIMAL" />
+		<result column="CITY_ID"        property="cityId"          	jdbcType="VARCHAR" />
+		<result column="SORT"          	property="sort"          	jdbcType="DECIMAL" />
+		<result column="LAYOUT"       	property="layout"      		jdbcType="VARCHAR" />
+		<result column="IMG_PATH"      	property="imgPath"     		jdbcType="VARCHAR" />
+		<result column="TILES_TYPE"  	property="tilesType"   		jdbcType="VARCHAR" />
+		<result column="MEMO"      		property="memo"     		jdbcType="VARCHAR" />
+		<result column="CITY_NAME"  	property="cityName"        	jdbcType="VARCHAR" /> 
+	</resultMap>
+
+    <resultMap id="shuffleResult" class="Travel" >
+    	<result column="ITEM_ID"        property="itemId"          	jdbcType="DECIMAL" />
+		<result column="CITY_ID"        property="cityId"          	jdbcType="VARCHAR" />
+		<result column="TOTAL"          property="total"          	jdbcType="DECIMAL" />
+		<result column="VERTICAL"      	property="vertical"     	jdbcType="VARCHAR" />
+		<result column="WIDE"  			property="wide"        		jdbcType="VARCHAR" />
+		<result column="COVER_YN"  		property="coverYn"     		jdbcType="VARCHAR" />  
+	</resultMap>
+  
+    <resultMap id="cityResult" class="Travel" >
+		<result column="CITY_ID"        property="cityId"          	jdbcType="VARCHAR" />
+		<result column="CITY_NAME"  	property="cityName"        	jdbcType="VARCHAR" />
+		<result column="TYPE"  			property="type"        		jdbcType="VARCHAR" />
+		<result column="SORT"          	property="sort"          	jdbcType="DECIMAL" />  
+	</resultMap>
+	
+    <resultMap id="tagResult" class="Travel" >
+		<result column="CITY_ID"        property="cityId"          	jdbcType="VARCHAR" />
+		<result column="KEYWORD"  		property="keyword"        	jdbcType="VARCHAR" /> 
+	</resultMap>
+	
+    <resultMap id="navResult" class="Travel" >
+		<result column="PREV_CITY_ID"   property="prevCityId"       jdbcType="VARCHAR" />
+		<result column="PREV_CITY_NAME" property="prevCityName"     jdbcType="VARCHAR" />
+		<result column="NEXT_CITY_ID"   property="nextCityId"       jdbcType="VARCHAR" />
+		<result column="NEXT_CITY_NAME" property="nextCityName"     jdbcType="VARCHAR" />
+	</resultMap>
+	
+	
+    <!-- 도시 목록 -->  
+    <select id="getCityList" parameterClass="TravelSearchCondition" resultMap="cityResult">
+		SELECT CITY_ID
+		     , CITY_NAME
+		     , TYPE
+		     , SORT
+		  FROM TB_TRAVEL_CITY
+		 WHERE USE_YN = 'Y'
+		<isNotEmpty property="tag"> 
+	       AND CITY_ID IN (
+		          SELECT CITY_ID
+		            FROM TB_TRAVEL_TAG
+		           WHERE UPPER(KEYWORD) = UPPER(#tag#)
+	     	   )
+		</isNotEmpty>
+		 ORDER BY SORT ASC
+	</select>
+
+
+    <!-- 도시 상세 -->  
+    <select id="getCity" parameterClass="TravelSearchCondition" resultMap="cityResult">
+		SELECT CITY_ID
+		     , CITY_NAME
+		     , TYPE
+		     , SORT
+		  FROM TB_TRAVEL_CITY
+		 WHERE USE_YN = 'Y'
+		   AND CITY_ID = #city#
+	</select>
+	
+	
+    <!-- 아이템 목록 -->  
+    <select id="getItemList" parameterClass="TravelSearchCondition" resultMap="itemResult">
+		SELECT A.ITEM_ID
+		     , LOWER(A.CITY_ID) CITY_ID
+     	     , A.SORT
+		     , A.LAYOUT
+		     , A.IMG_PATH
+		     , A.TILES_TYPE
+		     , A.MEMO
+		     , B.CITY_NAME
+		  FROM TB_TRAVEL_ITEM A
+		       LEFT OUTER JOIN TB_TRAVEL_CITY B ON A.CITY_ID = B.CITY_ID
+		 WHERE A.CITY_ID = #city#
+		   AND B.USE_YN = 'Y'
+		 ORDER BY A.SORT
+	</select>
+
+    <!-- 아이템 목록(셔플) -->  
+    <select id="getShuffle" parameterClass="TravelSearchCondition" resultMap="shuffleResult">
+		SELECT A.ITEM_ID
+		     , LOWER(B.CITY_ID) CITY_ID
+     	     , A.TOTAL
+		     , A.VERTICAL
+		     , A.WIDE
+		     , A.COVER_YN
+		  FROM TB_TRAVEL_SHUFFLE A
+		       LEFT OUTER JOIN TB_TRAVEL_ITEM B ON A.ITEM_ID = B.ITEM_ID
+		       LEFT OUTER JOIN TB_TRAVEL_CITY C ON B.CITY_ID = C.CITY_ID
+		 WHERE A.ITEM_ID = #itemId#
+		   AND C.USE_YN = 'Y'
+	</select>
+
+    <!-- 태그 목록 -->  
+    <select id="getTagList" parameterClass="TravelSearchCondition" resultMap="tagResult">
+		SELECT CITY_ID
+		     , KEYWORD
+		  FROM TB_TRAVEL_TAG
+		 WHERE CITY_ID = #city#
+	</select>
+
+    <!-- 네비게이션 -->  
+    <select id="getNav" parameterClass="TravelSearchCondition" resultMap="navResult">
+    	<![CDATA[
+		SELECT MAX(CASE WHEN B.TYPE = 'PREV' THEN A.CITY_ID END) AS PREV_CITY_ID,
+			   MAX(CASE WHEN B.TYPE = 'PREV' THEN A.CITY_NAME END) AS PREV_CITY_NAME,
+			   MAX(CASE WHEN B.TYPE = 'NEXT' THEN A.CITY_ID END) AS NEXT_CITY_ID,
+			   MAX(CASE WHEN B.TYPE = 'NEXT' THEN A.CITY_NAME END) AS NEXT_CITY_NAME
+		  FROM TB_TRAVEL_CITY A
+		       JOIN (
+			        SELECT 'PREV' AS TYPE
+			             , MAX(SORT) AS SORT 
+			          FROM TB_TRAVEL_CITY 
+			         WHERE USE_YN = 'Y'
+			           AND SORT < #sort#
+			        UNION ALL
+			        SELECT 'NEXT' AS TYPE
+			             , MIN(SORT) AS SORT 
+			          FROM TB_TRAVEL_CITY 
+			         WHERE USE_YN = 'Y'
+			           AND SORT > #sort#
+		       ) B ON A.SORT = B.SORT
+		]]>
+	</select>
+
+</sqlMap>

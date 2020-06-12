@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="euc-kr" ?>
+
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Loft">
+		
+	<typeAlias alias="Loft" type="loft.model.Loft"/>
+	<typeAlias alias="User" type="loft.model.User"/>
+  
+    <resultMap id="userResult" class="User" >
+		<result column="USER_ID"        property="userId"      	jdbcType="VARCHAR" />
+		<result column="USER_NAME"      property="userName"     jdbcType="VARCHAR" />
+		<result column="PASSWORD"       property="password"     jdbcType="VARCHAR" />
+	</resultMap>
+  
+  
+    <!-- 사용자 인증 -->  
+    <select id="userAuthentication" parameterClass="User" resultMap="userResult">
+		SELECT USER_ID
+		     , USER_NAME
+		     , PASSWORD
+		  FROM TB_USER
+		 WHERE USER_NAME = #userName#
+		   AND PASSWORD = #password#
+	</select>
+	
+</sqlMap>

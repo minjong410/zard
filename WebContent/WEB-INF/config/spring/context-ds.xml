@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+       					   http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+       					   http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+       					   http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<!-- Root Context: defines shared resources visible to all other web components -->
+
+
+	<!-- ========================== transaction ================================= -->
+	
+	<!-- By Oracle 
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+		<property name="driverClassName" value="oracle.jdbc.OracleDriver" />
+		<property name="url" value="jdbc:oracle:thin:@oracle.minjong410.cafe24.com:1521:orcl" />
+		<property name="username" value="minjong410" />
+		<property name="password" value="wjswlstnr1" />
+		<property name="defaultAutoCommit" value="false"/> 
+	</bean>
+	-->
+	
+	<!-- MySql -->
+	<bean id="dataSourceSpied" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+		<property name="driverClassName" value="net.sf.log4jdbc.DriverSpy" />
+		<property name="url" value="jdbc:mysql://umj64-003.cafe24.com:3306/minjong410" />
+		<property name="username" value="minjong410" />
+		<property name="password" value="wjswlstnr1!" />
+		<property name="validationQuery" value="select 1"/>  
+	</bean>
+
+	<bean id="dataSource" class="net.sf.log4jdbc.Log4jdbcProxyDataSource">
+		<constructor-arg ref="dataSourceSpied" />
+		<property name="logFormatter"> 
+			<bean class="net.sf.log4jdbc.tools.Log4JdbcCustomFormatter"> 
+				<property name="loggingType" value="MULTI_LINE" />
+				<property name="sqlPrefix" value="SQL:::" /> 
+			</bean>
+		</property> 
+	</bean>
+
+	<bean id="sqlMapClient" class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+		<!-- <property name="configLocation" value="classpath:sqlmap-config.xml"/> -->
+		<property name="configLocation" value="/WEB-INF/config/sqlmap-conf.xml" />
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<!-- 	
+	<bean id="sqlMapClientTemplate" class="org.springframework.orm.ibatis.SqlMapClientTemplate">
+		<property name="sqlMapClient" ref="sqlMapClient" />	
+	</bean>
+	-->
+
+	<!-- Transaction Manager for a single JDBC DataSource -->
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+
+
+	<!-- <bean id="sqlMapClient" class="com.lgcns.ikep4.util.reloadibatis.RefreshableSqlMapClientFactoryBean"> 
+		<property name="configLocations" value="classpath:/configuration/ibatis/sqlmap-conf.xml"/> 
+		<property name="mappingLocations" value="classpath*:/com/lgcns/ikep4/**/oracle/*_SqlMap.xml"></property> 
+		<property name="dataSource" ref="dataSource" /> <property name="checkInterval" 
+		value="1000" /> </bean> -->
+
+	<!-- <bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean"> 
+		<property name="jndiName" value="java:comp/env/jdbc/myoracle"/> </bean> -->
+
+
+</beans>

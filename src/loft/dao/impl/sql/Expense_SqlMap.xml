@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="euc-kr" ?>
+
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Expense">
+		
+	<typeAlias alias="Expense" type="loft.model.Expense"/>
+  
+    <resultMap id="expenseResult" class="Expense" >
+		<result column="IDX"           	property="idx"          jdbcType="DECIMAL" />
+		<result column="USER_ID"        property="userId"      	jdbcType="VARCHAR" />
+		<result column="USER_NAME"      property="userName"     jdbcType="VARCHAR" />
+		<result column="PRODUCT"        property="product"      jdbcType="VARCHAR" />
+		<result column="PLACE"          property="place"        jdbcType="VARCHAR" /> 
+		<result column="ATTENDEE"     	property="attendee"     jdbcType="VARCHAR" />
+		<result column="PRICE"       	property="price"        jdbcType="DECIMAL" />
+		<result column="STATUS"       	property="status"       jdbcType="VARCHAR" />
+		<result column="USE_DATE"    	property="useDate"      jdbcType="TIMESTAMP" />
+		<result column="REGIST_DATE"	property="registDate"	jdbcType="TIMESTAMP" /> 
+	</resultMap>
+	
+	
+    <!-- 지결 목록 -->  
+    <select id="getExpenseList" parameterClass="Expense" resultMap="expenseResult">
+		SELECT A.IDX
+     	     , A.USER_ID
+		     , B.USER_NAME
+		     , A.PRODUCT
+		     , A.PLACE
+		     , A.ATTENDEE
+		     , A.PRICE
+		     , A.STATUS
+		     , date_format(A.USE_DATE, '%Y-%m-%d') AS USE_DATE
+		     , date_format(A.REGIST_DATE, '%Y-%m-%d %H:%i') AS REGIST_DATE
+		  FROM TB_EXPENSE A
+		       LEFT OUTER JOIN TB_USER B ON A.USER_ID = B.USER_ID
+		 WHERE A.USE_DATE > date_sub(now(), interval 30 day)
+		 ORDER BY A.USE_DATE DESC
+<!--  
+		 WHERE A.USER_ID = #userId#
+-->
+	</select>
+
+
+    <!-- 지결 등록 -->  
+    <insert id="insertExpense" parameterClass="Expense">
+		<selectKey resultClass="int" keyProperty="idx" >
+			SELECT IFNULL(MAX(IDX), 0) + 1
+			  FROM TB_EXPENSE
+		</selectKey>
+    
+    	INSERT INTO TB_EXPENSE
+    	(
+			IDX,
+			USER_ID,
+			PRODUCT,
+			PLACE,
+			ATTENDEE,
+			PRICE,
+			USE_DATE,
+			REGIST_DATE
+    	)
+    	VALUES
+    	(
+    		#idx#,
+    		#userId#,
+    		#product#,
+    		#place#,
+    		#attendee#,
+    		#price#,
+			str_to_date(#useDate# , '%Y-%m-%d %H:%i'),
+			SYSDATE()    	
+    	)
+	</insert>
+	
+    <!-- 지결 수정 -->  
+    <update id="updateExpense" parameterClass="Expense">
+    	UPDATE TB_EXPENSE
+    	   SET STATUS = #status#
+    	 WHERE IDX = #idx# 
+	</update>
+
+</sqlMap>
