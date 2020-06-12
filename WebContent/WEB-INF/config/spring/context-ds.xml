@@ -26,9 +26,9 @@
 	<!-- MySql -->
 	<bean id="dataSourceSpied" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
 		<property name="driverClassName" value="net.sf.log4jdbc.DriverSpy" />
-		<property name="url" value="jdbc:mysql://umj64-003.cafe24.com:3306/minjong410" />
-		<property name="username" value="minjong410" />
-		<property name="password" value="wjswlstnr1!" />
+		<property name="url" value="jdbc:mysql://49.50.161.128:3306/watari" />
+		<property name="username" value="minjong" />
+		<property name="password" value="1234" />
 		<property name="validationQuery" value="select 1"/>  
 	</bean>
 
